@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بث مباشر للمباريات</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            direction: rtl;
+            background-color: #1e1e2f;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        header {
+            background: linear-gradient(90deg, #007bff, #6610f2);
+            color: white;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #theme-toggle {
+            background: #ffcc00;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        #theme-toggle:hover {
+            background: #ff9900;
+        }
+
+        .matches, .live-matches {
+            width: 90%;
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #2a2a3d;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+        }
+
+        .countdown {
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .live-match {
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .advertisement {
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            color: #000;
+            text-align: center;
+            font-size: 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stream-container {
+            margin-top: 20px;
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        ⚽ مباريات اليوم بث مباشر
+        <button id="theme-toggle">🌙 تبديل الوضع</button>
+    </header>
+    
+    <section class="matches">
+        <h2>📅 جدول المباريات</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>الفريق الأول</th>
+                    <th>الفريق الثاني</th>
+                    <th>الوقت</th>
+                    <th>الحالة</th>
+                    <th>العد التنازلي</th>
+                </tr>
+            </thead>
+            <tbody id="matches-list">
+                <!-- يتم تحديثها ديناميكياً -->
+            </tbody>
+        </table>
+    </section>
+
+    <!-- قسم البث المباشر -->
+    <section class="live-matches">
+        <h2>🎥 البث المباشر</h2>
+        <div class="stream-container" id="live-streams">
+            <!-- يتم تحميل المباريات الجارية هنا -->
+        </div>
+    </section>
+
+    <!-- قسم الإعلانات -->
+    <section class="advertisement">
+        <h2>🎉 إعلان خاص</h2>
+        <p>احصل على خصومات ضخمة! تابع أفضل العروض الآن.</p>
+    </section>
+    
+    <script>
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+    
+        const matches = [
+            { team1: 'برشلونة', team2: 'ريال مدريد', time: '20:00', status: 'لم تبدأ', countdown: '01:30:00' },
+            { team1: 'ليفربول', team2: 'مانشستر سيتي', time: '21:30', status: 'جارية الآن', countdown: '00:00:00' },
+            { team1: 'ريال', team2: 'برشا', time: '16:13', status: 'لم تبدأ', countdown: '01:30:00' },
+            { team1: 'لبل', team2: 'ببب', time: '03:12', status: 'لم تبدأ', countdown: '01:30:00' },
+            { team1: 'لل', team2: 'للل', time: '02:16', status: 'لم تبدأ', countdown: '01:30:00' },
+            { team1: 'لاا', team2: 'لل', time: '02:17', status: 'لم تبدأ', countdown: '01:30:00' },
+
+        ];
+    
+        function updateMatches() {
+            const matchesList = document.getElementById('matches-list');
+            matchesList.innerHTML = '';
+            matches.forEach(match => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${match.team1}</td><td>${match.team2}</td><td>${match.time}</td><td class='${match.status === 'جارية الآن' ? 'live-match' : ''}'>${match.status}</td><td class='countdown'>${match.countdown}</td>`;
+                matchesList.appendChild(row);
+            });
+        }
+        
+        function updateCountdowns() {
+            const countdownElements = document.querySelectorAll('.countdown');
+            countdownElements.forEach((element, index) => {
+                let [hours, minutes, seconds] = matches[index].countdown.split(':').map(Number);
+                if (hours > 0 || minutes > 0 || seconds > 0) {
+                    seconds--;
+                    if (seconds < 0) {
+                        seconds = 59;
+                        minutes--;
+                    }
+                    if (minutes < 0) {
+                        minutes = 59;
+                        hours--;
+                    }
+                    matches[index].countdown = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    element.textContent = matches[index].countdown;
+                } else {
+                    matches[index].status = 'جارية الآن';
+                    updateMatches();
+                }
+            });
+        }
+        
+        setInterval(updateCountdowns, 1000);
+        updateMatches();
+    </script>
+</body>
+</html>
